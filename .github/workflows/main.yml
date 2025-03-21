@@ -15,8 +15,12 @@ jobs:
     with:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-  name: Construção 
-  uses: docker/build/push
+          name: Construcao
+          uses: docker/build-push-action@v6
+          with:
+          context: ./src
+          file: ./src/Dockerfile
+          tags: muriloscastro/fake-shop-desafio:v2
 CD: 
 runs-on: ubuntu-latest
  steps:
