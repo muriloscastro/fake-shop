@@ -4,9 +4,9 @@ on:
     branches:["main"]
 workflow_dispatch:
 jobs:
- CI:
- runs-on: ubuntu-latest
- steps:
+CI:
+runs-on: ubuntu-latest
+steps:
   - name: Obtendo o codigo
     uses: actions/checkout@v4.2.2
   - run: echo "Docker Login" 
@@ -20,11 +20,26 @@ jobs:
           with:
           context: ./src
           file: ./src/Dockerfile
-          tags: muriloscastro/fake-shop-desafio:v2
+          tags: |
+           muriloscastro/fake-shop-desafio:v${{ github.run_number }}
+           muriloscastro/fake-shop-desafio:latest
+           
 CD: 
 runs-on: ubuntu-latest
- steps:
-   - run: echo "obter codigo"
+steps:
+  - name: Obtendo o codigo
+    uses: actions/checkout@v4.2.2
+ 
    - run: echo "Configurar o Kubernetes"
-   - run: echo "Executar o "
-  
+   - uses: azure/k8s-set-context@v4
+     with:
+     method: kubeconfig
+     kubeconfig: ${{ secrets.K8S_KOBERCONFIG }}
+
+   - uses: Azure/k8s-deploy@v5
+     with:
+     namespace: 'myapp'
+     manifests: |
+        k8s/deplyment.yaml
+     images: muriloscastro/fake-shop-desafio:v${{ github.run_number }}
+ 
