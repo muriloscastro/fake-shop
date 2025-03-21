@@ -1,47 +1,43 @@
 name: CI-CD
 on:
- push:
-    branches:["main"]
-workflow_dispatch:
-
- jobs:
-   CI:
-     runs-on: ubuntu-latest
-     steps:
-       - name: Obtendo o codigo
-         uses: actions/checkout@v4.2.2
-       - run: echo "Docker Login" 
-         name: Login to Docker Hub
-         uses: docker/login-action@v3
-         with:
-          username: ${{ vars.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-          name: Construcao
-          uses: docker/build-push-action@v6
-          with:
-          context: ./src
-          push: true
-          file: ./src/Dockerfile
-          tags: |
-           muriloscastro/fake-shop-desafio:v${{ github.run_number }}
-           muriloscastro/fake-shop-desafio:latest
-           
-CD: 
-runs-on: ubuntu-latest
-steps:
-  - name: Obtendo o codigo
-    uses: actions/checkout@v4.2.2
- 
-   - run: echo "Configurar o Kubernetes"
+push:
+   branches:["main"]
+ workflow_dispatch:
+jobs:
+ CI:
+   runs-on: ubuntu-latest
+   steps:
+     - name: Obtendo o codigo
+       uses: actions/checkout@v4.2.2
+     - name: Login to Docker Hub
+       uses: docker/login-action@v3
+       with:
+         username: ${{ secrets.DOCKERHUB_USERNAME }}
+         password: ${{ secrets.DOCKERHUB_TOKEN }}
+     - name: Construcao e Envio da Imagem Docker
+       uses: docker/build-push-action@v6
+       with:
+         context: ./src
+         push: true
+         file: ./src/Dockerfile
+         tags: |
+          muriloscastro/fake-shop-desafio:v${{ github.run_number }}
+          muriloscastro/fake-shop-desafio:latest
+ CD: 
+  needs: [CI]
+  runs-on: ubuntu-latest
+  steps:
+   - name: Obtendo o codigo
+     uses: actions/checkout@v4.2.2
+   
    - uses: azure/k8s-set-context@v4
      with:
-     method: kubeconfig
-     kubeconfig: ${{ secrets.K8S_KOBERCONFIG }}
-
+      method: kubeconfig
+      kubeconfig: ${{ secrets.K8S_KOBECONFIG }}
+     
    - uses: Azure/k8s-deploy@v5
      with:
-     namespace: 'myapp'
-     manifests: |
-        k8s/deplyment.yaml
-     images: muriloscastro/fake-shop-desafio:v${{ github.run_number }}
- 
+        manifests: |
+          k8s/deplyment.yaml
+        images: |
+          muriloscastro/fake-shop-desafio:v${{ github.run_number }}
