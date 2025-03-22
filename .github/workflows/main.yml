@@ -40,6 +40,6 @@ jobs:
       - uses: Azure/k8s-deploy@v5
         with:
             manifests: |
-              k8s/deplyment.yaml
+              k8s/deployment.yaml
             images: |
               muriloscastro/fake-shop-desafio:v${{ github.run_number }}
