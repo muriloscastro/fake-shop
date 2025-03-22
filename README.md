@@ -115,6 +115,11 @@ jobs:<br>
   - Em ambos o codigos foram utilizadas variaveis para acessar as configuações de login do dockerhub e também arquivo so arquivo kube config.
   - Para a configuração e deploy da aplcação foi utilizado o modelo da azure que é compative com outras plataformas de Cloud.
 
+# Execução da Actions 
+Quando realizar o commit do código acima, é possível acompanhar a execução do pipeline. 
+1) Clicar na aba Actions, selecionar a workflow **CI-CD** e ir no canto inferior direito na aba workflow run. 
+2) Clicar na pipeline e acompanhar os passos e etapas da automação.
+
 # Configuração de secrets 
 Para cadastrar as secrets é necessário acessar o menu Settings do projeto
 1) Clicar na aba Settings no menu superior do lado direito, proximo a Security e Insighs, no menu superior.
